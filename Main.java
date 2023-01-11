@@ -1,149 +1,104 @@
-import java.io.IOException;
+
 import java.util.Scanner;
 
 public class Main {
+    public static void main (String[] args){
 
-
-    public static void main(String[] args){
-
-        String[] Rome = {"I","II","III","IV","V","VI","VII","VIII","IX","X","XX","XXX","XL","L","LX","LXX","LXXX","XC","C"};
-        String[] Arab = {"1","2","3","4","5","6","7","8","9","10"};
-        String[] Dev  = {"+","-","*","/"};
+        Main ma = new Main();
 
         System.out.println("введите выражение");
         Scanner s = new Scanner(System.in);
-        String str = s.nextLine();
-        // запись выражения
+        String strInp = s.nextLine();
 
-        String[] arreyS = str.split(" ");
-        int a = 0;
-        int b = 0;
-        int x = 0;
-        boolean itsRome = false;
-        boolean itsArab = false;
-        boolean itsDew  = false;
-        int problema = 2;
-        try {
-//_______________________________________________________________________________________________
-            for (int i = 0; i < 10; i++) {
-                if (arreyS[0].equals(Rome[i])) {
-                    itsRome = true;
-                    a = 1 + i;
-                    problema = problema - 1;
-                }
-                if (arreyS[2].equals(Rome[i])) {
-                    itsRome = true;
-                    b = 1 + i;
-                    problema = problema - 1;
-                }
-            }
-//_______________________________________________________________________________________________
-            for (int i = 0; i < Arab.length; i++) {
-                if (arreyS[0].equals(Arab[i])) {
-                    itsArab = true;
-                    a = 1 + i;
-                    problema = problema - 1;
-                }
-                if (arreyS[2].equals(Arab[i])) {
-                    itsArab = true;
-                    b = 1 + i;
-                    problema = problema - 1;
-                }
-            }
-        } catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("строка не является математической операцией");
-            problema = 10;
-        }
+        String strOut = ma.calc(strInp);
 
-//_______________________________________________________________________________________________
-        for(int i = 0; i<Dev.length; i++) {
-            if (arreyS[1].equals(Dev[i])) {
-                int o = i;
-                switch (o){
-                    case 0 :
-                        x = a + b;
-                        itsDew = true;
-                        break;
-                    case 1 :
-                        x = a - b;
-                        itsDew = true;
-                        break;
-                    case 2 :
-                        x = a * b;
-                        itsDew = true;
-                        break;
-                    case 3 :
-                        x = a / b;
-                        itsDew = true;
-                        break;
-                }
+        System.out.println(strOut);
 
-            }
-        }
+    }
+    public String calc (String strIn) {
 
+            String[] Rome = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "C"};
+            String[] Arab = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+            String[] Dev = {"+", "-", "*", "/"};
+            String[] arr = strIn.split(" ");
+            String out = new String();
 
-        if (problema==1||problema==2){
+            int a = 0;
+            int b = 0;
+            int x = 0;
+            int e = arr.length;
+
+            boolean itRome = false;
+            boolean itArab = false;
+            boolean itNum = false;
+            boolean itDew = false;
+            boolean itOk = true;
+
             try {
-                throw new IOException();
-            }catch (IOException e){
-                System.out.println("Введите число от 0 до 10");
 
-            }
-        }
-        if (x < 1 && itsRome){
-            try {
-                throw new IOException();
-            }catch (IOException e){
-                System.out.println("в римской системе нет отрицательных чисел");
+                for (int i = 0; i < 10; i++) {
+                    if (arr[0].equals(Arab[i])) {
+                        a = 1 + i; itArab = true; itNum  = true;}
+                    if (arr[2].equals(Arab[i])) {
+                        b = 1 + i; itArab = true; itNum  = true;}
+                    if (arr[0].equals(Rome[i])) {
+                        a = 1 + i; itRome = true; itNum  = true;}
+                    if (arr[2].equals(Rome[i])) {
+                        b = 1 + i; itRome = true; itNum  = true;}
+                }//сканнирует числа
 
-            }
-        }
-        if (itsRome && itsArab){
-            try {
-                throw new IOException();
-            }catch (IOException e){
-                System.out.println("используются одновременно разные системы счисления");
-                problema = 10;
-            }
-        }
-        if (arreyS.length<3){
-            try {
-                throw new IOException();
-            }catch (IOException e){
+                for (int i = 0; i < 4; i++) {
+                    if (arr[1].equals(Dev[i])) {
+                        int o = i;
+                        itDew = true;
+                        switch (o) {
+                            case 0: x = a + b; break;
+                            case 1: x = a - b; break;
+                            case 2: x = a * b; break;
+                            case 3: x = a / b; break;
+                        }
+                    }
+                }//сканнирует знак
+
+
+                if (arr.length>3 || !itDew) {
+                    System.out.println("формат математической операции не удовлетворяет заданию - два операнда и один оператор (+, -, /, *)");
+                    itOk = false;
+                }
+                if (!itNum) {
+                    System.out.println("Введите число от 0 до 10");
+                    itOk = false;
+                }
+                if (itRome && itArab) {
+                    System.out.println("используются одновременно разные системы счисления");
+                    itOk = false;
+                }
+
+
+                try {
+
+                    if (itRome && itOk) { //выводит строку так как надо
+                        if (x > 10) {
+                            int b10 = x / 10;
+                            int b01 = x % 10;
+                            if (b01 == 0) {
+                                out = Rome[b10 + 8];
+                            } else {out = Rome[b10 + 8] + Rome[b01 - 1];}
+                        } else {out = Rome[x - 1];}
+                    } else if (itOk) {out = Integer.toString(x);}
+
+
+                } catch (ArrayIndexOutOfBoundsException e1) {
+                    System.out.println("в римской системе нет отрицательных чисел");
+                }
+
+            } catch(ArrayIndexOutOfBoundsException e1) {
                 System.out.println("строка не является математической операцией");
             }
+
+
+            return out;
         }
 
-        if (arreyS.length>3||itsDew == false||itsArab == false||itsRome == false){
-            try {
-                throw new IOException();
-            }catch (IOException e){
-                System.out.println("формат математической операции не удовлетворяет заданию - два операнда и один оператор (+, -, /, *)");
-                problema = 10;
-            }
-        }
-
-
-
-        if (problema==0||problema>10) {
-
-
-            int e = x / 10;
-            int e1 = x % 10;
-
-            if (itsRome) {
-                if (x > 10) {
-                    if (e1 == 0) {
-                        System.out.println(Rome[8 + e]);
-                    } else {
-                        System.out.println(Rome[8 + e] + Rome[e1 - 1]);
-                    }
-                }
-                System.out.println(Rome[x - 1]);
-            } else {
-                System.out.println(x);
-            }
-        }
-    }
 
 }
